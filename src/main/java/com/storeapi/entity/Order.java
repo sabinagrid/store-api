@@ -20,7 +20,10 @@ public class Order {
     private Long id;
 
     private LocalDateTime createdAt;
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
+
     private BigDecimal total;
 
     @ManyToOne

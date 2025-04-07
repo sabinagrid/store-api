@@ -2,10 +2,7 @@ package com.storeapi.service;
 
 import com.storeapi.dto.CartItemDto;
 import com.storeapi.dto.OrderSummaryDto;
-import com.storeapi.entity.Order;
-import com.storeapi.entity.OrderItem;
-import com.storeapi.entity.Product;
-import com.storeapi.entity.User;
+import com.storeapi.entity.*;
 import com.storeapi.repository.OrderRepository;
 import com.storeapi.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,14 +32,14 @@ public class OrderService {
             orderItems.add(orderItem);
             total = total.add(p.getPrice().multiply(BigDecimal.valueOf(dto.getQuantity())));
         }
-        Order order = new Order(null, LocalDateTime.now(), "confirmed", total, user, orderItems);
+        Order order = new Order(null, LocalDateTime.now(), OrderStatus.PLACED, total, user, orderItems);
         cartService.clearCart(sessionId);
         return orderRepository.save(order);
     }
 
     public void cancelOrder(Long orderId) {
         Order o = orderRepository.findById(orderId).orElseThrow();
-        o.setStatus("cancelled");
+        o.setStatus(OrderStatus.CANCELLED);
         for (OrderItem item : o.getItems()) {
             Product p = item.getProduct();
             p.setAvailable(p.getAvailable() + item.getQuantity());

@@ -1,5 +1,6 @@
 package com.storeapi.dto;
 
+import com.storeapi.entity.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -9,8 +10,8 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 public class OrderSummaryDto {
-    Long orderId;
-    LocalDateTime date;
-    BigDecimal total;
-    String status;
+    private Long id;
+    private LocalDateTime createdAt;
+    private BigDecimal total;
+    private OrderStatus status;
 }
