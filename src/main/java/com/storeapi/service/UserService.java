@@ -51,4 +51,14 @@ public class UserService {
     public Optional<User> getUserBySession(String sessionId) {
         return Optional.ofNullable(sessions.get(sessionId));
     }
+
+    public boolean resetPassword(String email, String newPassword) {
+        return userRepository.findByEmail(email)
+                .map(user -> {
+                    user.setPasswordHash(passwordEncoder.encode(newPassword));
+                    userRepository.save(user);
+                    return true;
+                })
+                .orElse(false);
+    }
 }

@@ -3,6 +3,7 @@ package com.storeapi.controller;
 import com.storeapi.dto.LoginRequest;
 import com.storeapi.dto.LoginResponse;
 import com.storeapi.dto.RegisterRequest;
+import com.storeapi.dto.ResetPasswordRequest;
 import com.storeapi.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,5 +30,15 @@ public class AuthController {
         return userService.login(request)
                 .map(sessionId -> ResponseEntity.ok(new LoginResponse(sessionId)))
                 .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
+        boolean result = userService.resetPassword(request.getEmail(), request.getNewPassword());
+        if (result) {
+            return ResponseEntity.ok("Password reset successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
     }
 }
