@@ -25,7 +25,16 @@ public class CartService {
         Product p = productRepository.findById(dto.getProductId())
                 .orElseThrow(() -> new RuntimeException("Product not found"));
         if (p.getAvailable() < dto.getQuantity()) throw new RuntimeException("Insufficient stock");
-        sessionCarts.computeIfAbsent(sessionId, id -> new ArrayList<>()).add(dto);
+
+        List<CartItemDto> cart = sessionCarts.computeIfAbsent(sessionId, id -> new ArrayList<>());
+
+        for (CartItemDto item : cart) {
+            if (item.getProductId().equals(dto.getProductId())) {
+                item.setQuantity(item.getQuantity() + dto.getQuantity());
+                return;
+            }
+        }
+        cart.add(dto);
     }
 
     public CartViewResponse viewCart(String sessionId) {
@@ -43,7 +52,8 @@ public class CartService {
     }
 
     public void removeItem(String sessionId, Long productId) {
-        sessionCarts.getOrDefault(sessionId, List.of()).removeIf(i -> i.getProductId().equals(productId));
+        List<CartItemDto> cart = sessionCarts.getOrDefault(sessionId, List.of());
+        cart.removeIf(i -> i.getProductId().equals(productId));
     }
 
     public void modifyItem(String sessionId, ModifyCartRequest req) {
@@ -54,6 +64,7 @@ public class CartService {
                 return;
             }
         }
+        throw new RuntimeException("Product not found in cart");
     }
 
     public List<CartItemDto> getCart(String sessionId) {
@@ -62,5 +73,28 @@ public class CartService {
 
     public void clearCart(String sessionId) {
         sessionCarts.remove(sessionId);
+    }
+
+    public String checkout(String sessionId) {
+        List<CartItemDto> cart = sessionCarts.get(sessionId);
+        if (cart == null || cart.isEmpty()) throw new RuntimeException("Cart is empty");
+
+        for (CartItemDto item : cart) {
+            Product product = productRepository.findById(item.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Product not found: " + item.getProductId()));
+
+            if (product.getAvailable() < item.getQuantity()) {
+                throw new RuntimeException("Not enough stock for product: " + product.getTitle());
+            }
+        }
+
+        for (CartItemDto item : cart) {
+            Product product = productRepository.findById(item.getProductId()).orElseThrow();
+            product.setAvailable(product.getAvailable() - item.getQuantity());
+            productRepository.save(product);
+        }
+
+        sessionCarts.remove(sessionId);
+        return "Order placed successfully";
     }
 }

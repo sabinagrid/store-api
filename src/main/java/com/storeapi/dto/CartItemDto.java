@@ -1,9 +1,11 @@
 package com.storeapi.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class CartItemDto {
-    Long productId;
-    int quantity;
+    private Long productId;
+    private int quantity;
 }

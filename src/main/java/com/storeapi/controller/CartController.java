@@ -6,6 +6,7 @@ import com.storeapi.dto.ModifyCartRequest;
 import com.storeapi.service.CartService;
 import com.storeapi.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -33,5 +34,11 @@ public class CartController {
     @PutMapping
     public void modifyItem(@RequestHeader("Authorization") String sessionId, @RequestBody ModifyCartRequest req) {
         cartService.modifyItem(sessionId, req);
+    }
+
+    @PostMapping("/checkout")
+    public ResponseEntity<String> checkout(@RequestHeader("Authorization") String sessionId) {
+        String result = cartService.checkout(sessionId);
+        return ResponseEntity.ok(result);
     }
 }
