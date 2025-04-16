@@ -6,6 +6,7 @@ import com.storeapi.entity.User;
 import com.storeapi.service.OrderService;
 import com.storeapi.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,5 +33,12 @@ public class OrderController {
     public List<OrderSummaryDto> getOrders(@RequestHeader("Authorization") String sessionId) {
         User user = userService.getUserBySession(sessionId).orElseThrow();
         return orderService.getUserOrders(user);
+    }
+
+    @GetMapping("/view")
+    public String viewOrders(@RequestHeader("Authorization") String sessionId, Model model) {
+        User user = userService.getUserBySession(sessionId).orElseThrow();
+        model.addAttribute("orders", orderService.getUserOrders(user));
+        return "orders";
     }
 }

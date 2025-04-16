@@ -7,6 +7,7 @@ import com.storeapi.service.CartService;
 import com.storeapi.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -40,5 +41,12 @@ public class CartController {
     public ResponseEntity<String> checkout(@RequestHeader("Authorization") String sessionId) {
         String result = cartService.checkout(sessionId);
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/view")
+    public String viewCartPage(@RequestHeader("Authorization") String sessionId, Model model) {
+        CartViewResponse response = cartService.viewCart(sessionId);
+        model.addAttribute("cart", response);
+        return "cart";
     }
 }

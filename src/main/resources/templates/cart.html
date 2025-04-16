@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cart</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<h2>Your Cart</h2>
+<ul>
+    <li th:each="item : ${cart.items}">
+        <span th:text="${item.ordinal}"></span>.
+        <span th:text="${item.productName}"></span> x
+        <span th:text="${item.quantity}"></span> @ $<span th:text="${item.price}"></span>
+    </li>
+</ul>
+<p>Total: $<span th:text="${cart.subtotal}"></span></p>
+</body>
+</html>

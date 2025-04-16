@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Products</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<h2>Products</h2>
+<ul>
+    <li th:each="p : ${products}">
+        <span th:text="${p.title}"></span> -
+        <span th:text="${p.available}"></span> available -
+        $<span th:text="${p.price}"></span>
+    </li>
+</ul>
+</body>
+</html>

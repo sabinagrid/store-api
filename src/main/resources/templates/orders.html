@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Orders</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<h2>Your Orders</h2>
+<ul>
+    <li th:each="o : ${orders}">
+        Order <span th:text="${o.id}"></span> -
+        <span th:text="${o.createdAt}"></span> -
+        $<span th:text="${o.total}"></span> -
+        <span th:text="${o.status}"></span>
+    </li>
+</ul>
+</body>
+</html>

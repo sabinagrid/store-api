@@ -2,36 +2,22 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Login - Store API</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #f5f5f5;
-        }
-        .form-signin {
-            width: 100%;
-            max-width: 330px;
-            padding: 15px;
-            background-color: white;
-            border-radius: 10px;
-        }
-    </style>
+    <title>Login</title>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-<form class="form-signin" method="post" action="/login">
-    <h2 class="text-center mb-4">Please sign in</h2>
+<h2>Login</h2>
 
-    <div th:if="${param.error}" class="alert alert-danger">Invalid email or password</div>
-    <div th:if="${param.logout}" class="alert alert-success">You have been logged out</div>
+<div th:if="${param.error}" style="color: red;">Invalid email or password</div>
+<div th:if="${param.logout}" style="color: green;">You have been logged out</div>
 
-    <input type="text" id="username" name="username" class="form-control mb-2" placeholder="Email" required autofocus>
-    <input type="password" id="password" name="password" class="form-control mb-3" placeholder="Password" required>
-
-    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+<form method="post" action="/auth/login">
+    <input type="email" name="email" placeholder="Email" required><br>
+    <input type="password" name="password" placeholder="Password" required><br>
+    <button type="submit">Login</button>
 </form>
+
+<p><a href="/auth/reset-password">Forgot password?</a></p>
+<p><a href="/auth/register">Register</a> if you don't have an account.</p>
 </body>
 </html>
