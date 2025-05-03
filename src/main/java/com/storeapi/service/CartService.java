@@ -8,12 +8,16 @@ import com.storeapi.entity.Product;
 import com.storeapi.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -23,8 +27,9 @@ public class CartService {
 
     public void addToCart(String sessionId, CartItemDto dto) {
         Product p = productRepository.findById(dto.getProductId())
-                .orElseThrow(() -> new RuntimeException("Product not found"));
-        if (p.getAvailable() < dto.getQuantity()) throw new RuntimeException("Insufficient stock");
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Product not found with id: " + dto.getProductId()));
+        if (p.getAvailable() < dto.getQuantity())
+            throw new ResponseStatusException(BAD_REQUEST, "Insufficient stock");
 
         List<CartItemDto> cart = sessionCarts.computeIfAbsent(sessionId, id -> new ArrayList<>());
 
@@ -64,7 +69,7 @@ public class CartService {
                 return;
             }
         }
-        throw new RuntimeException("Product not found in cart");
+        throw new ResponseStatusException(NOT_FOUND, "Product not found in cart");
     }
 
     public List<CartItemDto> getCart(String sessionId) {
@@ -75,26 +80,19 @@ public class CartService {
         sessionCarts.remove(sessionId);
     }
 
-    public String checkout(String sessionId) {
+    public void validateCartForCheckout(String sessionId) {
         List<CartItemDto> cart = sessionCarts.get(sessionId);
-        if (cart == null || cart.isEmpty()) throw new RuntimeException("Cart is empty");
+        if (cart == null || cart.isEmpty()) {
+            throw new ResponseStatusException(BAD_REQUEST, "Cart is empty");
+        }
 
         for (CartItemDto item : cart) {
             Product product = productRepository.findById(item.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Product not found: " + item.getProductId()));
+                    .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Product not found: " + item.getProductId()));
 
             if (product.getAvailable() < item.getQuantity()) {
-                throw new RuntimeException("Not enough stock for product: " + product.getTitle());
+                throw new ResponseStatusException(BAD_REQUEST, "Not enough stock for product: " + product.getTitle());
             }
         }
-
-        for (CartItemDto item : cart) {
-            Product product = productRepository.findById(item.getProductId()).orElseThrow();
-            product.setAvailable(product.getAvailable() - item.getQuantity());
-            productRepository.save(product);
-        }
-
-        sessionCarts.remove(sessionId);
-        return "Order placed successfully";
     }
 }

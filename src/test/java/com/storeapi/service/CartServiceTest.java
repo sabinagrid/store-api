@@ -7,6 +7,7 @@ import com.storeapi.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -66,7 +67,7 @@ class CartServiceTest {
         product.setAvailable(1);
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
-        assertThrows(RuntimeException.class, () ->
+        assertThrows(ResponseStatusException.class, () ->
                 cartService.addToCart("session1", createCartItem(5))
         );
     }
